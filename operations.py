@@ -1,45 +1,8 @@
-from write import createCustomerReceipt
-from write import createRestockReceipt
+from write import createCustomerReceipt, createRestockReceipt, updateInventory
 from read import readInventory
 
 items_list = []
 database = readInventory()
-
-def mainMenu():
-    """ Always returns to this landing menu where user can choose their mode. """
-    print("Welcome to WeCare!")
-    print("Health and Happiness is Our Priority")
-    print("Please select your mode.\n")
-
-    try:
-        mode = int(input(" 1. Buying Products\n 2. Restocking Items\n 3. Display Inventory\n 4. Exit\n>>"))
-        print("="*50)
-        if (mode == 1):
-            selectedBuyingMode()
-            print("="*50)
-            mainMenu()
-        elif (mode == 2):
-            selectedRestockingMode()
-            print("="*50)
-            mainMenu()
-        elif (mode == 3):
-            displayInventory()
-            print("="*50)
-            mainMenu()
-        elif (mode == 4):
-            print("See you again~")
-        else:
-            print("Invalid Selection.")
-            mainMenu()
-            
-    except(ValueError):
-        print("(!) *** Please select correct option. *** (!)")
-        print("="*47)
-        mainMenu()
-    except(Exception):
-        print("(!) *** Unknown error occured *** (!)")
-        print("="*47)
-        mainMenu()
 
 ''' Utility Functions '''
 def setInventory(id, amount):
@@ -62,7 +25,7 @@ def setInventory(id, amount):
     total_stock = database[id]["quantity"] #fetching quantity of items for a specific product
     if total_stock >= amount:
         database[id]["quantity"]-=amount
-        updateInventory()
+        updateInventory(database)
         return amount
     else:
         print("Apologies! We do not have enough stock.")
@@ -94,14 +57,6 @@ def displayInventory():
         tab_spacing = "\t\t" if len(item[1]["name"]) < 14 else "\t" #to fix formatting issues
         print(str(item[0])+"\t\t "+item[1]["name"]+tab_spacing+item[1]["brand"]+"\t\t "+str(item[1]["quantity"])+"\t\t\t "+str(item[1]["cost_price"]*2)+"\t\t\t"+item[1]["origin"])
     print("-"*134+"\n")
-
-def updateInventory():
-    """ Updates the data by writing into file following same format """
-    fp = open("stockpile.txt","w")
-    for item in database.values():
-        line = item["name"]+","+item["brand"]+", "+str(int(item["quantity"]))+", "+str(int(item["cost_price"]))+","+item["origin"]+"\n"
-        fp.write(line)
-    fp.close()
     
 #helper function
 def extraPolicy(num):
@@ -211,7 +166,7 @@ def performBuying():
         item_id = int(input("Enter the ID of the item to buy: "))
         item_amount = int(input("Enter the amount of item to buy: "))
 
-        if (item_amount <= 0):
+        if (item_amount <= 0 or item_id <= 0):
             print("(!) *** Amount must be a positive number. *** (!)")
             return
         
@@ -294,8 +249,10 @@ def selectedRestockingMode():
 
     except (IndexError):
         print("(!)***Please select a valid option***(!)")
+        selectedRestockingMode()
     except (ValueError):
         print("(!)***Please enter a number***(!)")
+        selectedRestockingMode()
     except (Exception):
         print("(!)***Unknown error occured***(!)")
         

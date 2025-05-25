@@ -57,7 +57,7 @@ def createCustomerReceipt(items_list, name, phone):
     phone_length = len(customer_phone)
     phone_spacing = " "*(100-16-phone_length)+"|"
     
-    fp.write(left_indent+"Invoice number: "+str(invoice_num)+"\t\t\t\t\t\t\t      Date Issued: "+invoice_date+"  |\n")
+    fp.write(left_indent+"Invoice number: "+str(invoice_num)+"\t\t\t\t\t\t\t      Date Issued: "+invoice_date+" |\n")
     fp.write(left_indent+"Customer Phone: "+customer_phone+phone_spacing+"\n")
     
     #header columns
@@ -146,11 +146,15 @@ def createRestockReceipt(items_list, selected_vendor):
     
     fp = open(receipt_date+receipt_time+".txt","w")
     left_indent = "\t\t|"
+    
     #invoice header
     fp.write(left_indent+"="*100+"|\n")
     tab_spacing="\t\t\t\t"
-    fp.write(left_indent+tab_spacing+"\t      "+selected_vendor+" Suppliers"+" "*38+"|\n")
-    fp.write(left_indent+tab_spacing+"\t     "+selected_vendor+" Pvt. Ltd."+" "*38+"|\n")
+    vendor_length = len(selected_vendor)
+    vendor_spacing = " "*(45-vendor_length)
+    
+    fp.write(left_indent+tab_spacing+"\t      "+selected_vendor+" Suppliers"+vendor_spacing+"|\n")
+    fp.write(left_indent+tab_spacing+"\t     "+selected_vendor+" Pvt. Ltd. "+vendor_spacing+"|\n")
     fp.write(left_indent+tab_spacing+"\t Address: Baneshwor, Kathmandu"+" "*31+"|\n")
     fp.write(left_indent+"="*100+"|\n")
     
@@ -173,7 +177,7 @@ def createRestockReceipt(items_list, selected_vendor):
     phone_length = len(customer_phone)
     phone_spacing = " "*(100-16-phone_length)+"|"
     
-    fp.write(left_indent+"Invoice number: "+str(invoice_num)+"\t\t\t\t\t\t\t      Date Issued: "+invoice_date+"  |\n")
+    fp.write(left_indent+"Invoice number: "+str(invoice_num)+"\t\t\t\t\t\t\t      Date Issued: "+invoice_date+" |\n")
     fp.write(left_indent+"Customer Phone: "+customer_phone+phone_spacing+"\n")
     
     #header columns
@@ -244,3 +248,11 @@ def createRestockReceipt(items_list, selected_vendor):
     #test: print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t**")
     fp.close()
     readReceipt(receipt_date, receipt_time)
+
+def updateInventory(database):
+    """ Updates the data by writing into file following same format """
+    fp = open("stockpile.txt","w")
+    for item in database.values():
+        line = item["name"]+","+item["brand"]+", "+str(int(item["quantity"]))+", "+str(int(item["cost_price"]))+","+item["origin"]+"\n"
+        fp.write(line)
+    fp.close()
